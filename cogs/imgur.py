@@ -15,8 +15,7 @@ class imgur:
         self.imgur_client = ImgurClient(self.clientID, self.secretID)
 
     @commands.command()
-    async def aa(self, ctx, link: str=None, album_name: str=None):
-        #rework album_name to accept multiple words
+    async def aa(self, ctx, link: str=None, album_name: str=None): #rework album_name to accept multiple words
         if not link or not album_name:
             await ctx.send('Please include a link to the album and a name for the album.')
 
@@ -44,6 +43,7 @@ class imgur:
             self.bot.serverconfig.data['albums'].pop(album_name, None)
             self.bot.serverconfig.save()
             await ctx.send('removed')
+            
         else:
             await ctx.send(f'couldnt find an album the name of {album_name}')
 
@@ -52,17 +52,12 @@ class imgur:
         if not album_name:
             if len(self.bot.serverconfig.data.get('albums')) >= 2:
                 await ctx.send('seems you need to provide an album name')
-            elif len(self.bot.serverconfig.data.get('albums')) == 1:
-                #looks horrible - im aware but can't get around it right now.
-                #this will be commented out when IMGUR fixes their shit.
+            elif len(self.bot.serverconfig.data.get('albums')) == 1: #hopefully can rework this, thanks imgur
                 emoji = discord.utils.get(self.bot.emojis, name='check')
                 await ctx.message.add_reaction(emoji)
-                get_album = self.bot.serverconfig.data.get('albums')
-                tail = list(get_album.values())[0].split('/')[4]
+                tail = list(self.bot.serverconfig.data.get('albums').values())[0].split('/')[4]
                 pick_one = random.choice(list(item.link for item in self.imgur_client.get_album_images(tail)))
-                data = requests.get(pick_one).content
-                io_image = io.BytesIO(data)
-                f = discord.File(io_image, filename="image.png")
+                f = discord.File(io.BytesIO(requests.get(pick_one).content), filename="image.png")
                 e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
                 e.set_image(url=f'''attachment://image.png''')
                 await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
@@ -71,8 +66,6 @@ class imgur:
                 await ctx.send('have you even added an album?')
 
         #add album names + check for multi phrase
-
-
 
 
 def setup(bot):
