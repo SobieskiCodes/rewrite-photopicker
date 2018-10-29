@@ -49,9 +49,14 @@ class imgur:
 
     @commands.command()
     async def p1(self, ctx, album_name: str=None):
+        if len(self.bot.serverconfig.data.get('albums')) is 0:
+            await ctx.send('you should probably add an album first..')
+            return
+
         if not album_name:
             if len(self.bot.serverconfig.data.get('albums')) >= 2:
                 await ctx.send('seems you need to provide an album name')
+
             elif len(self.bot.serverconfig.data.get('albums')) == 1: #hopefully can rework this, thanks imgur
                 emoji = discord.utils.get(self.bot.emojis, name='check')
                 await ctx.message.add_reaction(emoji)
@@ -74,9 +79,20 @@ class imgur:
             e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
             e.set_image(url=f'''attachment://image.png''')
             await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
-            
+
         else:
             await ctx.send(f'i couldnt find an album the name of {album_name}')
+
+
+    @commands.command()
+    async def al(self, ctx):
+        if len(self.bot.serverconfig.data.get('albums')) is not 0:
+            list_of_albums = ', '.join(list(self.bot.serverconfig.data.get('albums')))
+            await ctx.send(f'list of albums i see are "{list_of_albums}"')
+
+        else:
+            await ctx.send('do you even have any albums added bro?')
+
 
 
 def setup(bot):
