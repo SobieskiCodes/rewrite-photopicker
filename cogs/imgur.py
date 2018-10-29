@@ -43,7 +43,7 @@ class imgur:
             self.bot.serverconfig.data['albums'].pop(album_name, None)
             self.bot.serverconfig.save()
             await ctx.send('removed')
-            
+
         else:
             await ctx.send(f'couldnt find an album the name of {album_name}')
 
@@ -65,7 +65,18 @@ class imgur:
             elif not self.bot.serverconfig.data.get('albums'):
                 await ctx.send('have you even added an album?')
 
-        #add album names + check for multi phrase
+        if album_name in self.bot.serverconfig.data.get('albums'):
+            emoji = discord.utils.get(self.bot.emojis, name='check')
+            await ctx.message.add_reaction(emoji)
+            tail = self.bot.serverconfig.data.get('albums').get(album_name).split('/')[4]
+            pick_one = random.choice(list(item.link for item in self.imgur_client.get_album_images(tail)))
+            f = discord.File(io.BytesIO(requests.get(pick_one).content), filename="image.png")
+            e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
+            e.set_image(url=f'''attachment://image.png''')
+            await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
+            
+        else:
+            await ctx.send(f'i couldnt find an album the name of {album_name}')
 
 
 def setup(bot):
