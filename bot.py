@@ -40,6 +40,11 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
+@bot.check
+async def __before_invoke(ctx):
+    if not ctx.message.author.bot:
+        return True
+
 
 @bot.event
 async def on_message(message):

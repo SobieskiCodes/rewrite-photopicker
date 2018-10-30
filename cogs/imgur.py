@@ -18,8 +18,9 @@ class imgur:
     async def aa(self, ctx, link: str=None, album_name: str=None): #rework album_name to accept multiple words
         if not link or not album_name:
             await ctx.send('Please include a link to the album and a name for the album.')
+            return
 
-        possible_links = ['https://imgur.com/gallery/', 'https://imgur.com/a/']
+        possible_links = ['https://imgur.com/gallery/', 'https://imgur.com/a/'] #leaving this for additions later
         if not any(x in link for x in possible_links):
             await ctx.send('That doesnt look like a valid link.')
 
