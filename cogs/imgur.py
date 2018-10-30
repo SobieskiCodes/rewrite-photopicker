@@ -91,6 +91,20 @@ class imgur:
         else:
             await ctx.send('do you even have any albums added bro?')
 
+    @commands.command()
+    async def adda(self, ctx, member: discord.Member = None):
+        if not member:
+            await ctx.send('you should probably include a member.')
+            return
+        else:
+            self.bot.serverconfig.data['config']['admins'].append(member.id)
+            self.bot.serverconfig.save()
+            await ctx.send(f'{member.mention} has been added as an admin.')
+
+    @adda.error
+    async def pic_error(self, ctx, exception): #so this is a thing.
+        await ctx.send('Member not found! Try mentioning them instead.')
+
 
 def setup(bot):
     bot.add_cog(imgur(bot))

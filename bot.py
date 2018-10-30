@@ -37,6 +37,10 @@ async def on_ready():
 async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure) or isinstance(error, commands.errors.CommandNotFound):
         return
+    if isinstance(error, commands.errors.BadArgument):
+        #still have to handle this for adding admins....
+        pass
+
     else:
         raise error
 
