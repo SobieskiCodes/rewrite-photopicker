@@ -26,8 +26,7 @@ class imgur:
         else:
             album_name = album_name.lower()
             self.bot.serverconfig = pyson.Pyson(f'data/servers/{str(ctx.guild.id)}/config.json')
-            albums = self.bot.serverconfig.data.get('albums')
-            if album_name not in albums:
+            if album_name not in self.bot.serverconfig.data.get('albums'):
                 self.bot.serverconfig.data['albums'][album_name] = link
                 self.bot.serverconfig.save()
                 await ctx.send(f'woowoo {album_name}')
@@ -56,10 +55,10 @@ class imgur:
         if not album_name:
             if len(self.bot.serverconfig.data.get('albums')) >= 2:
                 await ctx.send('seems you need to provide an album name')
+                return
 
-            elif len(self.bot.serverconfig.data.get('albums')) == 1: #hopefully can rework this, thanks imgur
-                emoji = discord.utils.get(self.bot.emojis, name='check')
-                await ctx.message.add_reaction(emoji)
+            elif len(self.bot.serverconfig.data.get('albums')) == 1: #will swap this to local storage soon.
+                await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
                 tail = list(self.bot.serverconfig.data.get('albums').values())[0].split('/')[4]
                 pick_one = random.choice(list(item.link for item in self.imgur_client.get_album_images(tail)))
                 f = discord.File(io.BytesIO(requests.get(pick_one).content), filename="image.png")
@@ -71,8 +70,7 @@ class imgur:
                 await ctx.send('have you even added an album?')
 
         if album_name in self.bot.serverconfig.data.get('albums'):
-            emoji = discord.utils.get(self.bot.emojis, name='check')
-            await ctx.message.add_reaction(emoji)
+            await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
             tail = self.bot.serverconfig.data.get('albums').get(album_name).split('/')[4]
             pick_one = random.choice(list(item.link for item in self.imgur_client.get_album_images(tail)))
             f = discord.File(io.BytesIO(requests.get(pick_one).content), filename="image.png")
@@ -87,12 +85,10 @@ class imgur:
     @commands.command()
     async def al(self, ctx):
         if len(self.bot.serverconfig.data.get('albums')) is not 0:
-            list_of_albums = ', '.join(list(self.bot.serverconfig.data.get('albums')))
-            await ctx.send(f'list of albums i see are "{list_of_albums}"')
+            await ctx.send(f"list of albums i see are {', '.join(list(self.bot.serverconfig.data.get('albums')))}")
 
         else:
             await ctx.send('do you even have any albums added bro?')
-
 
 
 def setup(bot):
