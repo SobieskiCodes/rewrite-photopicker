@@ -127,6 +127,20 @@ class OwnerCog:
         embed.set_footer(text='justin@sobieski.codes')
         await ctx.send(embed=embed)
 
+    @commands.command(name='inv', hidden=True)
+    @commands.is_owner()
+    async def invite(self, ctx):
+        embed = discord.Embed(colour=discord.Colour(0x608f30),
+                              description=f'Invite me [here](https://discordapp.com/oauth2/authorize?client_id'
+                                          f'={self.bot.user.id}&scope=bot&permissions=0)')
+        embed.set_footer(text='')
+        await ctx.send(embed=embed)
+
+    @commands.command(name='sts', hidden=True)
+    @commands.is_owner()
+    async def status(self, ctx, status: str=None):
+        await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"{status}"))
+
 
 def setup(bot):
     bot.add_cog(OwnerCog(bot))

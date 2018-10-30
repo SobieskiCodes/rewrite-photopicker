@@ -18,7 +18,16 @@ bot = commands.AutoShardedBot(command_prefix=get_prefix, formatter=None)
 
 @bot.event
 async def on_guild_join(guild):
-    print(f'joined server {guild.name}')
+    if not os.path.exists(f"./data/servers/{str(guild.id)}/config.json"):
+        try:
+            os.makedirs(f"./data/servers/{str(guild.id)}/")
+            open(f'./data/servers/{str(guild.id)}/config.json', 'a').close()
+        except OSError as e:
+            if e.errno != e.errno.EEXIST:
+                raise
+    bot.serverconfig = pyson.Pyson(f'data/servers/{str(guild.id)}/config.json')
+    bot.serverconfig.data = {"albums": {}, "config": {"admins": [], "prefix": "."}}
+    bot.serverconfig.save()
 
 
 @bot.event
@@ -29,8 +38,7 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_ready():
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}')
-    game = discord.Game(f"Mention me for prefix")
-    await bot.change_presence(status=discord.Status.idle, activity=game)
+    await bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"Mention me for prefix"))
 
 
 @bot.event

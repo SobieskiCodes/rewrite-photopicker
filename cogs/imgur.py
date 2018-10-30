@@ -14,7 +14,7 @@ class imgur:
         self.secretID = bot.config.data.get('config').get('imgur_client_secret')
         self.imgur_client = ImgurClient(self.clientID, self.secretID)
 
-    @commands.command()
+    @commands.command() #need to create check for admins/owners only to use this
     async def aa(self, ctx, link: str=None, album_name: str=None): #rework album_name to accept multiple words
         if not link or not album_name:
             await ctx.send('Please include a link to the album and a name for the album.')
@@ -34,7 +34,7 @@ class imgur:
             else:
                 await ctx.send('already exists fool')
 
-    @commands.command()
+    @commands.command() #need to create check for admins/owners only to use this
     async def da(self, ctx, album_name: str=None):
         if not album_name:
             await ctx.send('please provide an album name')
@@ -79,9 +79,8 @@ class imgur:
             e.set_image(url=f'''attachment://image.png''')
             await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
 
-        else:
+        elif not album_name and len(self.bot.serverconfig.data.get('albums')) >= 2:
             await ctx.send(f'i couldnt find an album the name of {album_name}')
-
 
     @commands.command()
     async def al(self, ctx):
@@ -91,7 +90,7 @@ class imgur:
         else:
             await ctx.send('do you even have any albums added bro?')
 
-    @commands.command()
+    @commands.command() #need to create check for admins/owners only to use this
     async def adda(self, ctx, member: discord.Member = None):
         if not member:
             await ctx.send('you should probably include a member.')
