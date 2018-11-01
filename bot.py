@@ -3,7 +3,7 @@ import os
 from discord.ext import commands
 from pathlib import Path
 from cogs.util import pyson
-from cogs.imgur import NotAuthorized
+from cogs.errorhandling import NotAuthorized
 import aiohttp
 
 
