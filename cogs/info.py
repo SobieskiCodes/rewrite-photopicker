@@ -9,5 +9,6 @@ class info:
     async def info(self, ctx):
         await ctx.send(f"{self.bot.config.data.get('config').get('info')}")
 
+
 def setup(bot):
     bot.add_cog(info(bot))

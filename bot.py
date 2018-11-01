@@ -56,6 +56,7 @@ async def on_command_error(ctx, error):
     else:
         raise error
 
+
 @bot.check
 async def __before_invoke(ctx):
     if not ctx.message.author.bot:
@@ -97,7 +98,6 @@ async def create_aiohttp():
     bot.aiohttp = aiohttp.ClientSession()
 
 bot.config = pyson.Pyson('data/config/startup.json')
-token = bot.config.data.get('config').get('discord_token')
 load_extensions()
 bot.loop.create_task(create_aiohttp())
-bot.run(token, bot=True, reconnect=True)
+bot.run(bot.config.data.get('config').get('discord_token'), bot=True, reconnect=True)

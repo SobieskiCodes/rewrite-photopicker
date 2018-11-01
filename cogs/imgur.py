@@ -112,7 +112,7 @@ class imgur:
 
     @is_admin()
     @commands.command()
-    async def adda(self, ctx, member: discord.Member = None): #check if member in list already?
+    async def adda(self, ctx, member: discord.Member = None):
         if not member:
             await ctx.send('you should probably include a member.')
             return
@@ -126,7 +126,7 @@ class imgur:
 
     @is_admin()
     @commands.command()
-    async def rema(self, ctx, member: discord.Member = None): #check if member in list already?
+    async def rema(self, ctx, member: discord.Member = None):
         if not member:
             await ctx.send('you should probably include a member.')
             return
