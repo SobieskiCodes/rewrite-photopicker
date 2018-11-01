@@ -15,7 +15,7 @@ class imgur:
         self.imgur_client = ImgurClient(self.clientID, self.secretID)
 
     @commands.command() #need to create check for admins/owners only to use this
-    async def aa(self, ctx, link: str=None, album_name: str=None): #rework album_name to accept multiple words
+    async def aa(self, ctx, link: str=None, *, album_name: str=None):
         if not link or not album_name:
             await ctx.send('Please include a link to the album and a name for the album.')
             return
@@ -35,7 +35,7 @@ class imgur:
                 await ctx.send('already exists fool')
 
     @commands.command() #need to create check for admins/owners only to use this
-    async def da(self, ctx, album_name: str=None):
+    async def da(self, ctx, *, album_name: str=None):
         if not album_name:
             await ctx.send('please provide an album name')
 
@@ -48,7 +48,7 @@ class imgur:
             await ctx.send(f'couldnt find an album the name of {album_name}')
 
     @commands.command()
-    async def p1(self, ctx, album_name: str=None):
+    async def p1(self, ctx, *, album_name: str=None):
         if len(self.bot.serverconfig.data.get('albums')) is 0:
             await ctx.send('you should probably add an album first..')
             return

@@ -110,7 +110,7 @@ class OwnerCog:
 
     @commands.command(name='vme', hidden=True)
     @commands.is_owner()
-    async def vme(self, ctx):
+    async def vme(self, ctx): #need to add a check for dbl/.orga
         time = datetime.now() - self.boottime
         days = time.days
         hours, remainder = divmod(time.seconds, 3600)
@@ -121,7 +121,7 @@ class OwnerCog:
                                                                            f'Version: {self.version}\n'
                                                                            f'Library: d.py rewrite \n'
                                                                            f'Uptime: {onlinefor} \n'
-                                                                           f'Server Count: {len(self.bot.guilds) - 2}\n'
+                                                                           f'Server Count: {len(self.bot.guilds)}\n'
                                                                            f'Member Count: {len(self.bot.users)}'
                                                                            f'```')
         embed.set_footer(text='justin@sobieski.codes')
