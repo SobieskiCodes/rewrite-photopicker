@@ -122,7 +122,8 @@ class imgur:
 
     @adda.error
     async def pic_error(self, ctx, exception): #so this is a thing.
-        await ctx.send('Member not found! Try mentioning them instead.')
+        if not isinstance(exception, NotAuthorized):
+            await ctx.send('Member not found! Try mentioning them instead.')
 
 
 def setup(bot):
