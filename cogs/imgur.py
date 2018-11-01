@@ -14,10 +14,12 @@ class NotAuthorized(commands.CommandError):
 def is_admin():
     '''Checks if the message author is the owner or has admin perms'''
     def predicate(ctx):
-        if ('administrator', True) in ctx.author.guild_permissions or ctx.author.id == ctx.message.guild.owner.id:
+        if ctx.author.id == ctx.message.guild.owner.id or ctx.author.guild_permissions.manage_guild:
             return True
+
         if ctx.author.id in pyson.Pyson(f'data/servers/{str(ctx.guild.id)}/config.json').data.get('config').get('admins'):
             return True
+
         else:
             raise NotAuthorized
     return commands.check(predicate)
@@ -100,7 +102,6 @@ class imgur:
                 e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
                 e.set_image(url=f'''attachment://image.png''')
                 await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
-
 
         elif not album_name and len(self.bot.serverconfig.data.get('albums')) >= 2:
             await ctx.send(f'i couldnt find an album the name of {album_name}')

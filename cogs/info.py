@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 
 
 class info:
@@ -8,6 +9,10 @@ class info:
     @commands.command()
     async def info(self, ctx):
         await ctx.send(f"{self.bot.config.data.get('config').get('info')}")
+
+    @commands.command()
+    async def test(self, ctx):
+        print(ctx.author.guild_permissions.manage_guild)
 
 
 def setup(bot):
