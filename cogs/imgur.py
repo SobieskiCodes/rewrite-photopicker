@@ -1,7 +1,7 @@
 from cogs.util import pyson
 from discord.ext import commands
 from imgurpython import ImgurClient
-from cogs.errorhandling import NotAuthorized
+from cogs.util.errorhandling import NotAuthorized
 import random
 import discord
 import io
