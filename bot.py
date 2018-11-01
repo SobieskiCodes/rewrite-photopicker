@@ -4,6 +4,7 @@ from discord.ext import commands
 from pathlib import Path
 from cogs.util import pyson
 from cogs.imgur import NotAuthorized
+import aiohttp
 
 
 def get_prefix(bot, message):
@@ -91,7 +92,12 @@ def load_extensions():
                 print('Failed to load extension {}\n{}'.format(extension, exc))
 
 
+#create an aiohttp session that cogs can use <3 stroup
+async def create_aiohttp():
+    bot.aiohttp = aiohttp.ClientSession()
+
 bot.config = pyson.Pyson('data/config/startup.json')
 token = bot.config.data.get('config').get('discord_token')
 load_extensions()
+bot.loop.create_task(create_aiohttp())
 bot.run(token, bot=True, reconnect=True)

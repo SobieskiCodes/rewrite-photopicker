@@ -3,7 +3,6 @@ from discord.ext import commands
 from imgurpython import ImgurClient
 import random
 import discord
-import requests
 import io
 
 
@@ -81,10 +80,12 @@ class imgur:
                 await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
                 tail = list(self.bot.serverconfig.data.get('albums').values())[0].split('/')[4]
                 pick_one = random.choice(list(item.link for item in self.imgur_client.get_album_images(tail)))
-                f = discord.File(io.BytesIO(requests.get(pick_one).content), filename="image.png")
-                e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
-                e.set_image(url=f'''attachment://image.png''')
-                await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
+                async with self.bot.aiohttp.get(pick_one) as resp:
+                    link = await resp.read()
+                    f = discord.File(io.BytesIO(link), filename="image.png")
+                    e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
+                    e.set_image(url=f'''attachment://image.png''')
+                    await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
 
             elif not self.bot.serverconfig.data.get('albums'):
                 await ctx.send('have you even added an album?')
@@ -93,10 +94,13 @@ class imgur:
             await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
             tail = self.bot.serverconfig.data.get('albums').get(album_name).split('/')[4]
             pick_one = random.choice(list(item.link for item in self.imgur_client.get_album_images(tail)))
-            f = discord.File(io.BytesIO(requests.get(pick_one).content), filename="image.png")
-            e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
-            e.set_image(url=f'''attachment://image.png''')
-            await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
+            async with self.bot.aiohttp.get(pick_one) as resp:
+                link = await resp.read()
+                f = discord.File(io.BytesIO(link), filename="image.png")
+                e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
+                e.set_image(url=f'''attachment://image.png''')
+                await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
+
 
         elif not album_name and len(self.bot.serverconfig.data.get('albums')) >= 2:
             await ctx.send(f'i couldnt find an album the name of {album_name}')
