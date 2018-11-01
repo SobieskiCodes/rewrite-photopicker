@@ -48,7 +48,7 @@ async def on_command_error(ctx, error):
         return
     if isinstance(error, commands.errors.BadArgument):
         #still have to handle this for adding admins....
-        pass
+        return
     if isinstance(error, NotAuthorized):
         await ctx.send('you are not authorized for this command.')
         pass

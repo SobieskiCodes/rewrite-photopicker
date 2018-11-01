@@ -6,7 +6,7 @@ class OwnerCog:
     def __init__(self, bot):
         self.bot = bot
         self.boottime = datetime.now()
-        self.version = 'v1.0.0'
+        self.version = 'v1.0.0 Beta'
 
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
@@ -178,6 +178,17 @@ class OwnerCog:
 
         else:
             await ctx.send(f'I couldnt find a cog named {cog}')
+
+    @commands.command(name='ui', hidden=True)
+    @commands.is_owner()
+    async def updateinfo(self, ctx, *, msg: str=None):
+        if msg:
+            self.bot.config.data['config']['info'] = msg
+            self.bot.config.save()
+            await ctx.send('info has been updated.')
+        else:
+            await ctx.send('please provide a message.')
+
 
 
 def setup(bot):

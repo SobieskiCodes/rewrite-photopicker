@@ -8,7 +8,7 @@ import io
 
 
 class NotAuthorized(commands.CommandError):
-    message = """Exception raised when the message author is not the owner of the bot."""
+    message = """Exception raised when the message author is not an owner/admin/has bot rights of the bot."""
     pass
 
 
@@ -32,7 +32,7 @@ class imgur:
         self.imgur_client = ImgurClient(self.clientID, self.secretID)
 
     @is_admin()
-    @commands.command() #need to create check for admins/owners only to use this
+    @commands.command()
     async def aa(self, ctx, link: str=None, *, album_name: str=None):
         if not link or not album_name:
             await ctx.send('Please include a link to the album and a name for the album.')
@@ -53,7 +53,7 @@ class imgur:
                 await ctx.send('already exists fool')
 
     @is_admin()
-    @commands.command() #need to create check for admins/owners only to use this
+    @commands.command()
     async def da(self, ctx, *, album_name: str=None):
         if not album_name:
             await ctx.send('please provide an album name')
@@ -110,15 +110,32 @@ class imgur:
             await ctx.send('do you even have any albums added bro?')
 
     @is_admin()
-    @commands.command() #need to create check for admins/owners only to use this
+    @commands.command()
     async def adda(self, ctx, member: discord.Member = None): #check if member in list already?
         if not member:
             await ctx.send('you should probably include a member.')
             return
         else:
-            self.bot.serverconfig.data['config']['admins'].append(member.id)
-            self.bot.serverconfig.save()
-            await ctx.send(f'{member.mention} has been added as an admin.')
+            if not member.id in self.bot.serverconfig.data.get('config').get('admins'):
+                self.bot.serverconfig.data['config']['admins'].append(member.id)
+                self.bot.serverconfig.save()
+                await ctx.send(f'{member.mention} has been added as an admin.')
+            else:
+                await ctx.send('That user is already an admin!')
+
+    @is_admin()
+    @commands.command()
+    async def rema(self, ctx, member: discord.Member = None): #check if member in list already?
+        if not member:
+            await ctx.send('you should probably include a member.')
+            return
+        else:
+            if member.id in self.bot.serverconfig.data.get('config').get('admins'):
+                self.bot.serverconfig.data['config']['admins'].remove(member.id)
+                self.bot.serverconfig.save()
+                await ctx.send(f'{member.mention} has been removed as an admin.')
+            else:
+                await ctx.send('I couldnt find that user in the admin list.')
 
     @adda.error
     async def pic_error(self, ctx, exception): #so this is a thing.
