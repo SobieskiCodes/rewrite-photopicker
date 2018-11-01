@@ -138,7 +138,8 @@ class imgur:
                 await ctx.send('I couldnt find that user in the admin list.')
 
     @adda.error
-    async def pic_error(self, ctx, exception): #so this is a thing.
+    @rema.error
+    async def member_not_found_error(self, ctx, exception): #so this is a thing.
         if not isinstance(exception, NotAuthorized):
             await ctx.send('Member not found! Try mentioning them instead.')
 
