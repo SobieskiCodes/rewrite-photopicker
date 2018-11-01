@@ -2,9 +2,7 @@ from discord.ext import commands
 import discord
 from datetime import datetime
 
-
 class OwnerCog:
-
     def __init__(self, bot):
         self.bot = bot
         self.boottime = datetime.now()
@@ -127,19 +125,59 @@ class OwnerCog:
         embed.set_footer(text='justin@sobieski.codes')
         await ctx.send(embed=embed)
 
-    @commands.command(name='inv', hidden=True)
-    @commands.is_owner()
-    async def invite(self, ctx):
-        embed = discord.Embed(colour=discord.Colour(0x608f30),
-                              description=f'Invite me [here](https://discordapp.com/oauth2/authorize?client_id'
-                                          f'={self.bot.user.id}&scope=bot&permissions=0)')
-        embed.set_footer(text='')
-        await ctx.send(embed=embed)
-
     @commands.command(name='sts', hidden=True)
     @commands.is_owner()
     async def status(self, ctx, status: str=None):
         await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"{status}"))
+
+    @commands.command()
+    @commands.is_owner()
+    async def enable(self, ctx, cog: str=None):
+        ''': Cogs are case senstive'''
+        if not cog:
+            cog_list = []
+            for cog in self.bot.cogs:
+                cog_list.append(cog)
+            contains = ['OwnerCog', 'GuildOwnerCog']
+            for x in contains:
+                if x in cog_list:
+                    cog_list.remove(x)
+
+            await ctx.send(f'Available cogs are: {cog_list}')
+            return
+
+        if cog in (cog for cog in self.bot.cogs):
+            self.bot.config.data['servers'][str(ctx.guild.id)][cog] = True
+            self.bot.config.save()
+            await ctx.send(f'{cog} Enabled.')
+            return
+
+        else:
+            await ctx.send(f'I couldnt find a cog named {cog}')
+
+    @commands.command()
+    @commands.is_owner()
+    async def disable(self, ctx, cog: str = None):
+        ''': Cogs are case senstive'''
+        if not cog:
+            cog_list = []
+            for cog in self.bot.cogs:
+                cog_list.append(cog)
+            contains = ['OwnerCog', 'GuildOwnerCog']
+            for x in contains:
+                if x in cog_list:
+                    cog_list.remove(x)
+            await ctx.send(f'Available cogs are: {cog_list}')
+            return
+
+        if cog in self.bot.config.data.get('servers').get(str(ctx.guild.id)):
+            self.bot.config.data['servers'][str(ctx.guild.id)].pop(cog, None)
+            self.bot.config.save()
+            await ctx.send(f'{cog} Disabled.')
+            return
+
+        else:
+            await ctx.send(f'I couldnt find a cog named {cog}')
 
 
 def setup(bot):

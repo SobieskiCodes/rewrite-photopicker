@@ -7,6 +7,23 @@ import requests
 import io
 
 
+class NotAuthorized(commands.CommandError):
+    message = """Exception raised when the message author is not the owner of the bot."""
+    pass
+
+
+def is_admin():
+    '''Checks if the message author is the owner or has admin perms'''
+    def predicate(ctx):
+        if ('administrator', True) in ctx.author.guild_permissions or ctx.author.id == ctx.message.guild.owner.id:
+            return True
+        if ctx.author.id in pyson.Pyson(f'data/servers/{str(ctx.guild.id)}/config.json').data.get('config').get('admins'):
+            return True
+        else:
+            raise NotAuthorized
+    return commands.check(predicate)
+
+
 class imgur:
     def __init__(self, bot):
         self.bot = bot
@@ -14,6 +31,7 @@ class imgur:
         self.secretID = bot.config.data.get('config').get('imgur_client_secret')
         self.imgur_client = ImgurClient(self.clientID, self.secretID)
 
+    @is_admin()
     @commands.command() #need to create check for admins/owners only to use this
     async def aa(self, ctx, link: str=None, *, album_name: str=None):
         if not link or not album_name:
@@ -34,6 +52,7 @@ class imgur:
             else:
                 await ctx.send('already exists fool')
 
+    @is_admin()
     @commands.command() #need to create check for admins/owners only to use this
     async def da(self, ctx, *, album_name: str=None):
         if not album_name:
@@ -90,8 +109,9 @@ class imgur:
         else:
             await ctx.send('do you even have any albums added bro?')
 
+    @is_admin()
     @commands.command() #need to create check for admins/owners only to use this
-    async def adda(self, ctx, member: discord.Member = None):
+    async def adda(self, ctx, member: discord.Member = None): #check if member in list already?
         if not member:
             await ctx.send('you should probably include a member.')
             return

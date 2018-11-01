@@ -3,6 +3,7 @@ import os
 from discord.ext import commands
 from pathlib import Path
 from cogs.util import pyson
+from cogs.imgur import NotAuthorized
 
 
 def get_prefix(bot, message):
@@ -48,7 +49,9 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.BadArgument):
         #still have to handle this for adding admins....
         pass
-
+    if isinstance(error, NotAuthorized):
+        await ctx.send('you are not authorized for this command.')
+        pass
     else:
         raise error
 
