@@ -10,10 +10,5 @@ class info:
     async def info(self, ctx):
         await ctx.send(f"{self.bot.config.data.get('config').get('info')}")
 
-    @commands.command()
-    async def test(self, ctx):
-        print(ctx.author.guild_permissions.manage_guild)
-
-
 def setup(bot):
     bot.add_cog(info(bot))
