@@ -1,6 +1,6 @@
 from discord.ext import commands
 import discord
-
+from cogs.util import pyson
 
 def is_guild_owner():
     def predictate(ctx):
@@ -16,10 +16,11 @@ class GuildOwnerCog:
 
     @commands.command(aliases=['sp'])
     @is_guild_owner()
-    async def set_prefix(self, ctx, prefix: str=None):
+    async def setprefix(self, ctx, prefix: str=None):
         ''': Change the prefix of the bot, up to two chars.'''
         if not prefix:
-            prefix = self.bot.config.data.get('servers').get(str(ctx.guild.id)).get('prefix')
+            self.bot.serverconfig = pyson.Pyson(f'data/servers/{str(ctx.guild.id)}/config.json')
+            prefix = self.bot.serverconfig .data.get('config').get('prefix')
             await ctx.send(f'current prefix is {prefix}')
             return
         else:

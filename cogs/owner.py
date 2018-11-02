@@ -127,7 +127,7 @@ class OwnerCog:
 
     @commands.command(name='sts', hidden=True)
     @commands.is_owner()
-    async def status(self, ctx, status: str=None):
+    async def status(self, ctx, *, status: str=None):
         await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"{status}"))
 
     @commands.command()
