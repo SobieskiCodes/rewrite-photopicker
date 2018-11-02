@@ -48,54 +48,6 @@ class OwnerCog:
         else:
             await ctx.send('**`SUCCESS`**')
 
-    @commands.command(name='cogenable', hidden=True)
-    @commands.is_owner()
-    async def cog_enable(self, ctx, server: str=None, cog: str=None):
-        if not server or not cog:
-            await ctx.send('You forgot the server or cog nub.')
-            return
-        if not server.isdigit():
-            await ctx.send('thats not even a valid server, what are you doing...')
-            return
-        if server not in self.bot.config.data.get('servers'):
-            await ctx.send(f'couldnt find server "{server}"')
-            return
-        if cog not in self.bot.cogs:
-            await ctx.send(f'{cog} doesnt seem like a real cog my man')
-            return
-        else:
-            if cog not in self.bot.config.data.get('servers').get(server):
-                self.bot.config.data['servers'][server][cog] = True
-                self.bot.config.save()
-                await ctx.send(f'{cog} enabled for server: {server}.')
-                return
-            else:
-                await ctx.send(f'{cog} is already enabled for server: {server}')
-
-    @commands.command(name='cogdisable', hidden=True)
-    @commands.is_owner()
-    async def cog_disable(self, ctx, server: str=None, cog: str=None):
-        if not server or not cog:
-            await ctx.send('You forgot the server or cog nub.')
-            return
-        if not server.isdigit():
-            await ctx.send('thats not even a valid server, what are you doing...')
-            return
-        if server not in self.bot.config.data.get('servers'):
-            await ctx.send(f'couldnt find server "{server}"')
-            return
-        if cog not in self.bot.cogs:
-            await ctx.send(f'{cog} doesnt seem like a real cog my man')
-            return
-        else:
-            if cog in self.bot.config.data.get('servers').get(server):
-                self.bot.config.data['servers'][server].pop(cog, None)
-                self.bot.config.save()
-                await ctx.send(f'{cog} disabled for server: {server}.')
-                return
-            else:
-                await ctx.send(f'{cog} i dont see that cog enabled for server: {server}')
-
     @commands.command(name='echo', hidden=True)
     @commands.is_owner()
     #add support for server/channel blah blah blah.
@@ -129,55 +81,6 @@ class OwnerCog:
     @commands.is_owner()
     async def status(self, ctx, *, status: str=None):
         await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"{status}"))
-
-    @commands.command()
-    @commands.is_owner()
-    async def enable(self, ctx, cog: str=None):
-        ''': Cogs are case senstive'''
-        if not cog:
-            cog_list = []
-            for cog in self.bot.cogs:
-                cog_list.append(cog)
-            contains = ['OwnerCog', 'GuildOwnerCog']
-            for x in contains:
-                if x in cog_list:
-                    cog_list.remove(x)
-
-            await ctx.send(f'Available cogs are: {cog_list}')
-            return
-
-        if cog in (cog for cog in self.bot.cogs):
-            self.bot.config.data['servers'][str(ctx.guild.id)][cog] = True
-            self.bot.config.save()
-            await ctx.send(f'{cog} Enabled.')
-            return
-
-        else:
-            await ctx.send(f'I couldnt find a cog named {cog}')
-
-    @commands.command()
-    @commands.is_owner()
-    async def disable(self, ctx, cog: str = None):
-        ''': Cogs are case senstive'''
-        if not cog:
-            cog_list = []
-            for cog in self.bot.cogs:
-                cog_list.append(cog)
-            contains = ['OwnerCog', 'GuildOwnerCog']
-            for x in contains:
-                if x in cog_list:
-                    cog_list.remove(x)
-            await ctx.send(f'Available cogs are: {cog_list}')
-            return
-
-        if cog in self.bot.config.data.get('servers').get(str(ctx.guild.id)):
-            self.bot.config.data['servers'][str(ctx.guild.id)].pop(cog, None)
-            self.bot.config.save()
-            await ctx.send(f'{cog} Disabled.')
-            return
-
-        else:
-            await ctx.send(f'I couldnt find a cog named {cog}')
 
     @commands.command(name='ui', hidden=True)
     @commands.is_owner()
