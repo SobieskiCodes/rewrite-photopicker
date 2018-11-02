@@ -20,7 +20,7 @@ class GuildOwnerCog:
         ''': Change the prefix of the bot, up to two chars.'''
         if not prefix:
             self.bot.serverconfig = pyson.Pyson(f'data/servers/{str(ctx.guild.id)}/config.json')
-            prefix = self.bot.serverconfig .data.get('config').get('prefix')
+            prefix = self.bot.serverconfig.data.get('config').get('prefix')
             await ctx.send(f'current prefix is {prefix}')
             return
         else:
@@ -28,8 +28,8 @@ class GuildOwnerCog:
                 await ctx.send('Prefix length too long.')
                 return
 
-            self.bot.config.data['servers'][str(ctx.guild.id)]['prefix'] = prefix
-            self.bot.config.save()
+            self.bot.serverconfig.data['config']['prefix'] = prefix
+            self.bot.serverconfig.save()
             await ctx.send(f'Prefix updated to {prefix}')
 
     @commands.command(name='inv', hidden=True)
