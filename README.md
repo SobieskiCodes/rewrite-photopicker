@@ -38,6 +38,8 @@ removeadmin [name/mention] ~ *remadmin,deladmin,deleteadmin - Removes and admin,
 pickone [album] *p1,po,pick - Pick a random image from the album, if only one album it will not require an album name
 albumlist *al,list - Lists all albums in the server
 info - Displays custom text set by owner of the bot
+setcontent (content) ~ - Change the content from "You asked me to pick a picture" can be blank
+settitle (title) ~ - Change the title from "I chose..." can be blank
 ```
 
 ### Requirements
