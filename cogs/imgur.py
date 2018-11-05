@@ -173,7 +173,7 @@ class imgur:
 
     @is_admin()
     @commands.command()
-    async def settitle(self, ctx, title: str=''):
+    async def settitle(self, ctx, *, title: str=''):
         '''settitle [title name] - Change the title from "I Chose..." '''
         self.bot.serverconfig.data['config']['title'] = title
         self.bot.serverconfig.save()
@@ -181,7 +181,7 @@ class imgur:
 
     @is_admin()
     @commands.command()
-    async def setcontent(self, ctx, content: str=''):
+    async def setcontent(self, ctx, *, content: str=''):
         '''setcontent [content name] - Change the content from "You asked me to pick a picture" '''
         self.bot.serverconfig.data['config']['content'] = content
         self.bot.serverconfig.save()
