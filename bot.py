@@ -80,8 +80,9 @@ def load_extensions():
     for dirpath, dirnames, filenames in os.walk(path):
         if dirpath.strip('./') == str(path):
             for cog in filenames:
-                extension = 'cogs.'+cog[:-3]
-                bot.startup_extensions.append(extension)
+                if cog.endswith('.py'):
+                    extension = 'cogs.'+cog[:-3]
+                    bot.startup_extensions.append(extension)
 
     if __name__ == "__main__":
         for extension in bot.startup_extensions:

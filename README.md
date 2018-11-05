@@ -72,7 +72,7 @@ And a json file under /data/config name 'startup.json'
 
 ## License
 
-This project is licensed under the The Unlicense - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the The Unlicense - see the [LICENSE.md](LICENSE) file for details
 
 ## Acknowledgments
 

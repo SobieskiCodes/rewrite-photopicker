@@ -80,6 +80,12 @@ class imgur:
             await ctx.send('You should probably add an album first..')
             return
 
+        content = self.bot.serverconfig.data.get('config').get('content')
+        title = self.bot.serverconfig.data.get('config').get('title')
+        if content is None and title is None:
+            content = 'You asked me to pick a picture...'
+            title = 'I Chose...'
+
         if not album_name:
             if len(self.bot.serverconfig.data.get('albums')) >= 2:
                 await ctx.send('Seems you forgot to provide an album name!')
@@ -92,9 +98,9 @@ class imgur:
                 async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
                     link = await resp.read()
                     f = discord.File(io.BytesIO(link), filename="image.png")
-                    e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
+                    e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
                     e.set_image(url=f'''attachment://image.png''')
-                    await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
+                    await ctx.send(file=f, embed=e, content=content)
 
             elif not self.bot.serverconfig.data.get('albums'):
                 await ctx.send('It doesnt seem that you have added an ablum.')
@@ -106,9 +112,9 @@ class imgur:
             async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
                 link = await resp.read()
                 f = discord.File(io.BytesIO(link), filename="image.png")
-                e = discord.Embed(title="I Chose..", colour=discord.Colour(0x278d89), )
+                e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
                 e.set_image(url=f'''attachment://image.png''')
-                await ctx.send(file=f, embed=e, content='You asked me to pick a picture...')
+                await ctx.send(file=f, embed=e, content=content)
 
         elif not album_name and len(self.bot.serverconfig.data.get('albums')) >= 2:
             await ctx.send(f'I couldnt find an album by the name of "{album_name}"')
@@ -164,6 +170,22 @@ class imgur:
     async def member_not_found_error(self, ctx, exception): #so this is a thing.
         if not isinstance(exception, NotAuthorized):
             await ctx.send('Member not found! Try mentioning them instead.')
+
+    @is_admin()
+    @commands.command()
+    async def settitle(self, ctx, title: str=''):
+        '''settitle [title name] - Change the title from "I Chose..." '''
+        self.bot.serverconfig.data['config']['title'] = title
+        self.bot.serverconfig.save()
+        await ctx.send('Title updated')
+
+    @is_admin()
+    @commands.command()
+    async def setcontent(self, ctx, content: str=''):
+        '''setcontent [content name] - Change the content from "You asked me to pick a picture" '''
+        self.bot.serverconfig.data['config']['content'] = content
+        self.bot.serverconfig.save()
+        await ctx.send('Content updated')
 
 
 def setup(bot):
