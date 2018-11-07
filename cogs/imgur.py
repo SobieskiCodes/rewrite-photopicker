@@ -120,33 +120,34 @@ class imgur:
             elif not self.bot.serverconfig.data.get('albums'):
                 await ctx.send('It doesnt seem that you have added an ablum.')
 
-        if album_name.lower() in self.bot.serverconfig.data.get('albums'):
-            await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
-            try:
-                tail = self.bot.serverconfig.data.get('albums').get(album_name.lower()).split('/')[4]
-                the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
-                async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
-                    link = await resp.read()
-                    f = discord.File(io.BytesIO(link), filename="image.png")
-                    e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
-                    e.set_image(url=f'''attachment://image.png''')
-                    await ctx.send(file=f, embed=e, content=content)
+        if album_name:
+            if album_name.lower() in self.bot.serverconfig.data.get('albums'):
+                await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
+                try:
+                    tail = self.bot.serverconfig.data.get('albums').get(album_name.lower()).split('/')[4]
+                    the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
+                    async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
+                        link = await resp.read()
+                        f = discord.File(io.BytesIO(link), filename="image.png")
+                        e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
+                        e.set_image(url=f'''attachment://image.png''')
+                        await ctx.send(file=f, embed=e, content=content)
 
-            except Exception as e:
-                print(f'{e} - multialbum')
-                print(f'message = {ctx.message.content}')
-                print(f"albums = {list(self.bot.serverconfig.data.get('albums'))}")
-                for album in list(self.bot.serverconfig.data.get('albums')):
-                    print(f"name: {album} link: {self.bot.serverconfig.data.get('albums').get(album)}")
-                #print(f"length = {len(list(self.bot.serverconfig.data.get('albums')))}")
-                if isinstance(e, ImgurClientError):
-                    print(f'{e.error_message}')
-                    await ctx.send(f'{e.error_message}')
-                elif not isinstance(e, ImgurClientError):
-                    await ctx.send('There was an issue processing this command.')
+                except Exception as e:
+                    print(f'{e} - multialbum')
+                    print(f'message = {ctx.message.content}')
+                    print(f"albums = {list(self.bot.serverconfig.data.get('albums'))}")
+                    for album in list(self.bot.serverconfig.data.get('albums')):
+                        print(f"name: {album} link: {self.bot.serverconfig.data.get('albums').get(album)}")
+                    #print(f"length = {len(list(self.bot.serverconfig.data.get('albums')))}")
+                    if isinstance(e, ImgurClientError):
+                        print(f'{e.error_message}')
+                        await ctx.send(f'{e.error_message}')
+                    elif not isinstance(e, ImgurClientError):
+                        await ctx.send('There was an issue processing this command.')
 
-        elif album_name.lower() not in self.bot.serverconfig.data.get('albums'):
-            await ctx.send(f'I couldnt find an album by the name of "{album_name}"')
+            elif album_name.lower() not in self.bot.serverconfig.data.get('albums'):
+                await ctx.send(f'I couldnt find an album by the name of "{album_name}"')
 
     @commands.command(aliases=['al', 'list'])
     async def albumlist(self, ctx):
@@ -202,19 +203,20 @@ class imgur:
 
     @is_admin()
     @commands.command()
-    async def settitle(self, ctx, *, title: str=''):
-        '''settitle [title name] - Change the title from "I Chose..." '''
-        self.bot.serverconfig.data['config']['title'] = title
-        self.bot.serverconfig.save()
-        await ctx.send('Title updated')
+    async def set(self, ctx, content_title: str=None, *, message: str=''):
+        '''set [content/title] [name] - Change the title/content from "I Chose..." "you asked.."'''
+        editable_args = ['content', 'title']
+        if not content_title:
+            await ctx.send(f"Please provide either {' or '.join(editable_args)}.")
+            return
 
-    @is_admin()
-    @commands.command()
-    async def setcontent(self, ctx, *, content: str=''):
-        '''setcontent [content name] - Change the content from "You asked me to pick a picture" '''
-        self.bot.serverconfig.data['config']['content'] = content
-        self.bot.serverconfig.save()
-        await ctx.send('Content updated')
+        if content_title.lower() in editable_args:
+            self.bot.serverconfig.data['config'][content_title.lower()] = message
+            self.bot.serverconfig.save()
+            await ctx.send(f'{content_title.lower()} updated.')
+
+        else:
+            await ctx.send("Invalid parameters.")
 
 
 def setup(bot):
