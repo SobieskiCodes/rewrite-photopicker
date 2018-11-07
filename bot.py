@@ -54,6 +54,7 @@ async def on_command_error(ctx, error):
         await ctx.send('you are not authorized for this command.')
         pass
     else:
+        print(f'Error in {ctx.guild.id} with message {ctx.message.content}')
         raise error
 
 

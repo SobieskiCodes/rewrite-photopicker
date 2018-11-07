@@ -1,6 +1,7 @@
 from cogs.util import pyson
 from discord.ext import commands
 from imgurpython import ImgurClient
+from imgurpython.helpers.error import ImgurClientError
 from cogs.util.errorhandling import NotAuthorized
 import random
 import discord
@@ -93,7 +94,36 @@ class imgur:
 
             elif len(self.bot.serverconfig.data.get('albums')) == 1: #will swap this to local storage soon.
                 await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
-                tail = list(self.bot.serverconfig.data.get('albums').values())[0].split('/')[4]
+                try:
+                    tail = list(self.bot.serverconfig.data.get('albums').values())[0].split('/')[4]
+                    the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
+                    async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
+                        link = await resp.read()
+                        f = discord.File(io.BytesIO(link), filename="image.png")
+                        e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
+                        e.set_image(url=f'''attachment://image.png''')
+                        await ctx.send(file=f, embed=e, content=content)
+
+                except Exception as e:
+                    print(f'{e} - single album')
+                    print(f"albums = {list(self.bot.serverconfig.data.get('albums'))}")
+                    print(f"length = {list(self.bot.serverconfig.data.get('albums'))}")
+                    for album in list(self.bot.serverconfig.data.get('albums')):
+                        print(f"name: {album} link: {self.bot.serverconfig.data.get('albums').get(album)}")
+                    # print(f"length = {len(list(self.bot.serverconfig.data.get('albums')))}")
+                    if isinstance(e, ImgurClientError):
+                        print(f'{e.error_message}')
+                        await ctx.send(f'{e.error_message}')
+                    elif not isinstance(e, ImgurClientError):
+                        await ctx.send('There was an issue processing this command.')
+
+            elif not self.bot.serverconfig.data.get('albums'):
+                await ctx.send('It doesnt seem that you have added an ablum.')
+
+        if album_name.lower() in self.bot.serverconfig.data.get('albums'):
+            await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
+            try:
+                tail = self.bot.serverconfig.data.get('albums').get(album_name.lower()).split('/')[4]
                 the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
                 async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
                     link = await resp.read()
@@ -102,21 +132,20 @@ class imgur:
                     e.set_image(url=f'''attachment://image.png''')
                     await ctx.send(file=f, embed=e, content=content)
 
-            elif not self.bot.serverconfig.data.get('albums'):
-                await ctx.send('It doesnt seem that you have added an ablum.')
+            except Exception as e:
+                print(f'{e} - multialbum')
+                print(f'message = {ctx.message.content}')
+                print(f"albums = {list(self.bot.serverconfig.data.get('albums'))}")
+                for album in list(self.bot.serverconfig.data.get('albums')):
+                    print(f"name: {album} link: {self.bot.serverconfig.data.get('albums').get(album)}")
+                #print(f"length = {len(list(self.bot.serverconfig.data.get('albums')))}")
+                if isinstance(e, ImgurClientError):
+                    print(f'{e.error_message}')
+                    await ctx.send(f'{e.error_message}')
+                elif not isinstance(e, ImgurClientError):
+                    await ctx.send('There was an issue processing this command.')
 
-        if album_name in self.bot.serverconfig.data.get('albums'):
-            await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
-            tail = self.bot.serverconfig.data.get('albums').get(album_name).split('/')[4]
-            the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
-            async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
-                link = await resp.read()
-                f = discord.File(io.BytesIO(link), filename="image.png")
-                e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
-                e.set_image(url=f'''attachment://image.png''')
-                await ctx.send(file=f, embed=e, content=content)
-
-        elif not album_name and len(self.bot.serverconfig.data.get('albums')) >= 2:
+        elif album_name.lower() not in self.bot.serverconfig.data.get('albums'):
             await ctx.send(f'I couldnt find an album by the name of "{album_name}"')
 
     @commands.command(aliases=['al', 'list'])
