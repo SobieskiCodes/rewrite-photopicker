@@ -120,7 +120,7 @@ class imgur:
             elif not self.bot.serverconfig.data.get('albums'):
                 await ctx.send('It doesnt seem that you have added an ablum.')
 
-        if album_name:
+        elif album_name:
             if album_name.lower() in self.bot.serverconfig.data.get('albums'):
                 await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
                 try:
