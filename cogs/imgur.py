@@ -95,7 +95,10 @@ class imgur:
             elif len(self.bot.serverconfig.data.get('albums')) == 1: #will swap this to local storage soon.
                 await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
                 try:
-                    tail = list(self.bot.serverconfig.data.get('albums').values())[0].split('/')[4]
+                    self.bot.serverid = f'{ctx.guild.id}'
+                    self.bot.serveralbum = pyson.Pyson(f'data/servers/{self.bot.serverid}/config.json')
+                    tail = list(self.bot.serveralbum.data.get('albums').values())[0].split('/')[4]
+                    print(f'serverid: {self.bot.serverid} tail:  {tail}')
                     the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
                     async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
                         link = await resp.read()
@@ -107,10 +110,9 @@ class imgur:
                 except Exception as e:
                     print(f'{e} - single album')
                     print(f"albums = {list(self.bot.serverconfig.data.get('albums'))}")
-                    print(f"length = {list(self.bot.serverconfig.data.get('albums'))}")
+                    print(f"length = {len(list(self.bot.serverconfig.data.get('albums')))}")
                     for album in list(self.bot.serverconfig.data.get('albums')):
                         print(f"name: {album} link: {self.bot.serverconfig.data.get('albums').get(album)}")
-                    # print(f"length = {len(list(self.bot.serverconfig.data.get('albums')))}")
                     if isinstance(e, ImgurClientError):
                         print(f'{e.error_message}')
                         await ctx.send(f'{e.error_message}')
@@ -124,7 +126,9 @@ class imgur:
             if album_name.lower() in self.bot.serverconfig.data.get('albums'):
                 await ctx.message.add_reaction(discord.utils.get(self.bot.emojis, name='check'))
                 try:
-                    tail = self.bot.serverconfig.data.get('albums').get(album_name.lower()).split('/')[4]
+                    self.bot.serveridmulti = f'{ctx.guild.id}'
+                    self.bot.serveralbummulti = pyson.Pyson(f'data/servers/{self.bot.serveridmulti}/config.json')
+                    tail = self.bot.serveralbummulti.data.get('albums').get(album_name.lower()).split('/')[4]
                     the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
                     async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
                         link = await resp.read()
@@ -139,7 +143,6 @@ class imgur:
                     print(f"albums = {list(self.bot.serverconfig.data.get('albums'))}")
                     for album in list(self.bot.serverconfig.data.get('albums')):
                         print(f"name: {album} link: {self.bot.serverconfig.data.get('albums').get(album)}")
-                    #print(f"length = {len(list(self.bot.serverconfig.data.get('albums')))}")
                     if isinstance(e, ImgurClientError):
                         print(f'{e.error_message}')
                         await ctx.send(f'{e.error_message}')
