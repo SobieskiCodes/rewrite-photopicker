@@ -22,7 +22,7 @@ def is_admin():
     return commands.check(predicate)
 
 
-class imgur:
+class imgur(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.clientID = bot.config.data.get('config').get('imgur_client_id')

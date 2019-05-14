@@ -2,7 +2,8 @@ from discord.ext import commands
 import discord
 from datetime import datetime
 
-class OwnerCog:
+
+class OwnerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.boottime = datetime.now()
@@ -10,7 +11,7 @@ class OwnerCog:
 
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
-    async def cog_load(self, ctx, *, cog: str):
+    async def load_cog(self, ctx, *, cog: str):
         """Command which Loads a Module.
         Remember to use dot path. e.g: cogs.owner"""
 
@@ -23,7 +24,7 @@ class OwnerCog:
 
     @commands.command(name='unload', hidden=True)
     @commands.is_owner()
-    async def cog_unload(self, ctx, *, cog: str):
+    async def unload_cog(self, ctx, *, cog: str):
         """Command which Unloads a Module.
         Remember to use dot path. e.g: cogs.owner"""
 
@@ -36,7 +37,7 @@ class OwnerCog:
 
     @commands.command(name='reload', hidden=True)
     @commands.is_owner()
-    async def cog_reload(self, ctx, *, cog: str):
+    async def reload_cog(self, ctx, *, cog: str):
         """Command which Reloads a Module.
         Remember to use dot path. e.g: cogs.owner"""
 
@@ -91,7 +92,6 @@ class OwnerCog:
             await ctx.send('info has been updated.')
         else:
             await ctx.send('please provide a message.')
-
 
 
 def setup(bot):

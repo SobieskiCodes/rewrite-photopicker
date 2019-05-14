@@ -10,7 +10,7 @@ def is_guild_owner():
     return commands.check(predictate)
 
 
-class GuildOwnerCog:
+class GuildOwnerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
