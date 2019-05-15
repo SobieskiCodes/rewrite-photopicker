@@ -45,7 +45,8 @@ set [content/title](message) ~ - Change the title/content from "I Chose..." "you
 
 ```
 python3.6+
-imgurpython
+discord.py==1.1.1
+imgurpython==1.1.7
 ```
 
 And a json file under /data/config name 'startup.json'
@@ -65,7 +66,7 @@ And a json file under /data/config name 'startup.json'
 
 ## Built With
 
-* [Discord.py Rewrite](https://github.com/Rapptz/discord.py/tree/rewrite) - a modern, easy to use, feature-rich, and async ready API wrapper for Discord.
+* [Discord.py](https://github.com/Rapptz/discord.py/) - a modern, easy to use, feature-rich, and async ready API wrapper for Discord.
 
 ## Authors
 
