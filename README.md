@@ -39,6 +39,9 @@ pickone [album] *p1,po,pick - Pick a random image from the album, if only one al
 albumlist *al,list - Lists all albums in the server
 info - Displays custom text set by owner of the bot
 set [content/title](message) ~ - Change the title/content from "I Chose..." "you asked.." can be blank
+To set the content/title to the title/description from imgur use the setup below:
+['album title', 'Album Title'] title must be set to one of those; ~set title album title
+['description', 'Description'] content needs to be set to one of those; ~set content description
 ```
 
 ### Requirements
