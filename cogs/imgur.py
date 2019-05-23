@@ -71,7 +71,7 @@ class imgur(commands.Cog):
         else:
             await ctx.send(f'Couldnt find an album the name of "{album_name}"')
 
- @commands.command(aliases=['p1', 'po', 'pick'])
+    @commands.command(aliases=['p1', 'po', 'pick'])
     async def pickone(self, ctx, *, album_name: str=None):
         '''pickone (Optional album name) - picks a random image from the album.
         ex; .pickone a phone
