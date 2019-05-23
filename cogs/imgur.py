@@ -71,7 +71,7 @@ class imgur(commands.Cog):
         else:
             await ctx.send(f'Couldnt find an album the name of "{album_name}"')
 
-    @commands.command(aliases=['p1', 'po', 'pick'])
+ @commands.command(aliases=['p1', 'po', 'pick'])
     async def pickone(self, ctx, *, album_name: str=None):
         '''pickone (Optional album name) - picks a random image from the album.
         ex; .pickone a phone
@@ -100,7 +100,14 @@ class imgur(commands.Cog):
                     tail = list(self.bot.serveralbum.data.get('albums').values())[0].split('/')[4]
                     print(f'serverid: {self.bot.serverid} tail:  {tail}')
                     the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
-                    async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
+                    item = random.choice(the_list)
+                    item_id = item.split('/')[3][0:-4]
+                    if title in ['album title', 'Album Title']:
+                        title = self.imgur_client.get_album(tail).title
+                    if content in ['description', 'Description']:
+                        content = self.imgur_client.get_image(item_id).description
+
+                    async with self.bot.aiohttp.get(item) as resp:
                         link = await resp.read()
                         f = discord.File(io.BytesIO(link), filename="image.png")
                         e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
@@ -130,7 +137,14 @@ class imgur(commands.Cog):
                     self.bot.serveralbummulti = pyson.Pyson(f'data/servers/{self.bot.serveridmulti}/config.json')
                     tail = self.bot.serveralbummulti.data.get('albums').get(album_name.lower()).split('/')[4]
                     the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
-                    async with self.bot.aiohttp.get(random.choice(the_list)) as resp:
+                    item = random.choice(the_list)
+                    item_id = item.split('/')[3][0:-4]
+                    if title in ['album title', 'Album Title']:
+                        title = self.imgur_client.get_album(tail).title
+                    if content in ['description', 'Description']:
+                        content = self.imgur_client.get_image(item_id).description
+
+                    async with self.bot.aiohttp.get(item) as resp:
                         link = await resp.read()
                         f = discord.File(io.BytesIO(link), filename="image.png")
                         e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
