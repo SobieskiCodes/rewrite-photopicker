@@ -1,6 +1,6 @@
 # Rewrite Photopicker
 
-This is a rewrite version of my Async branch [photopicker](https://github.com/SobieskiCodes/photopicker)
+This is a rewrite version of my Async branch [photopicker](https://github.com/SobieskiCodes/discord_bots_ASYNC/tree/master/photopicker)
 Written to handle asynchronous compatible with Aiohttp requests, SQL storage, and local image caching.
 
 
