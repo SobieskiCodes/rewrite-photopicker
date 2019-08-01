@@ -98,7 +98,7 @@ class imgur(commands.Cog):
                     self.bot.serverid = f'{ctx.guild.id}'
                     self.bot.serveralbum = pyson.Pyson(f'data/servers/{self.bot.serverid}/config.json')
                     tail = list(self.bot.serveralbum.data.get('albums').values())[0].split('/')[4]
-                    print(f'serverid: {self.bot.serverid} tail:  {tail}')
+                    #print(f'serverid: {self.bot.serverid} tail:  {tail}')
                     the_list = list(item.link for item in self.imgur_client.get_album_images(tail))
                     item = random.choice(the_list)
                     item_id = item.split('/')[3][0:-4]
@@ -109,9 +109,14 @@ class imgur(commands.Cog):
 
                     async with self.bot.aiohttp.get(item) as resp:
                         link = await resp.read()
-                        f = discord.File(io.BytesIO(link), filename="image.png")
-                        e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
-                        e.set_image(url=f'''attachment://image.png''')
+                        if item.endswith('.gif'):
+                            f = discord.File(io.BytesIO(link), filename="image.gif")
+                            e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
+                            e.set_image(url=f'''attachment://image.gif''')
+                        else:
+                            f = discord.File(io.BytesIO(link), filename="image.png")
+                            e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
+                            e.set_image(url=f'''attachment://image.png''')
                         await ctx.send(file=f, embed=e, content=content)
 
                 except Exception as e:
@@ -146,9 +151,14 @@ class imgur(commands.Cog):
 
                     async with self.bot.aiohttp.get(item) as resp:
                         link = await resp.read()
-                        f = discord.File(io.BytesIO(link), filename="image.png")
-                        e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
-                        e.set_image(url=f'''attachment://image.png''')
+                        if item.endswith('.gif'):
+                            f = discord.File(io.BytesIO(link), filename="image.gif")
+                            e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
+                            e.set_image(url=f'''attachment://image.gif''')
+                        else:
+                            f = discord.File(io.BytesIO(link), filename="image.png")
+                            e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
+                            e.set_image(url=f'''attachment://image.png''')
                         await ctx.send(file=f, embed=e, content=content)
 
                 except Exception as e:
