@@ -132,7 +132,7 @@ class imgur(commands.Cog):
                         await ctx.send('There was an issue processing this command.')
 
             elif not self.bot.serverconfig.data.get('albums'):
-                await ctx.send('It doesnt seem that you have added an ablum.')
+                await ctx.send('It doesnt seem that you have added an album.')
 
         elif album_name:
             if album_name.lower() in self.bot.serverconfig.data.get('albums'):
