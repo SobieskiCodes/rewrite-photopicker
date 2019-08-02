@@ -1,0 +1,8 @@
+{
+    "config": {
+        "token": "discordtoken",
+        "imgur_client_id": "imgur_client_id",
+        "imgur_client_secret": "imgure_client_secret",
+        "info": "v2.0.1 is now live, message me if you find any issues. ProbsJustin#0001"
+    }
+}
