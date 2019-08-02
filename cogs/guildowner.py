@@ -2,6 +2,7 @@ from discord.ext import commands
 import discord
 from cogs.util import pyson
 
+
 def is_guild_owner():
     def predictate(ctx):
         if ctx.author is ctx.guild.owner:
