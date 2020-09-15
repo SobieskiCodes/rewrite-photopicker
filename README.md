@@ -2,6 +2,7 @@
 
 This is a rewrite version of my Async branch [photopicker](https://github.com/SobieskiCodes/discord_bots_ASYNC/tree/master/photopicker)
 Written to handle asynchronous compatible with Aiohttp requests, SQL storage, and local image caching.
+[invite](https://discordapp.com/oauth2/authorize?client_id=451153773859962881&scope=bot&permissions=0)
 
 
 ## Command Changes
