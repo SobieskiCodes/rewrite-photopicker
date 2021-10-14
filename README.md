@@ -1,17 +1,11 @@
-# Rewrite Photopicker
+# Photopicker
 
-This is a rewrite version of my Async branch [photopicker](https://github.com/SobieskiCodes/discord_bots_ASYNC/tree/master/photopicker)
-Written to handle asynchronous compatible with Aiohttp requests, SQL storage, and local image caching.
+This is a rewrite of the rewrite version(branch) of my async branch [photopicker](https://github.com/SobieskiCodes/discord_bots_ASYNC/tree/master/photopicker)
+Written to handle asynchronous compatibility with aiohttp requests, SQLite storage, and local image caching (spoiler alert, it never happened).
+This is likely to be the final version with the deprecation of discord.py
 
-[invite](https://discordapp.com/oauth2/authorize?client_id=451153773859962881&scope=bot&permissions=0)
 
-
-## Command Changes
-
-* Setup has been removed completely and is now done automagically.
-* Adding admins is now done with mentions eg; .addadmin @ProbsJustin#0001
-* removeadmin has been added
-* Adding albums no longer gives a prompt, and the command has been reworked
+[invite](https://discordapp.com/oauth2/authorize?client_id=451153773859962881&scope=bot&permissions=511040)
 
 
 ### Commands
@@ -47,11 +41,12 @@ To set the content/title to the title/description from imgur use the setup below
 ```
 
 ### Requirements
+python3.6+
 
 ```
-python3.6+
-discord.py==1.1.1
-imgurpython==1.1.7
+discord.py==1.7.3
+jthon==1.0.2
+aiosqlite==0.17.0
 ```
 
 And a json file under /data/config name 'startup.json'
@@ -67,7 +62,7 @@ And a json file under /data/config name 'startup.json'
 }
 ```
 
-**The bot needs to be started BEFORE you invite it to a server - it creates the files it needs on server join.
+
 
 ## Built With
 

@@ -6,8 +6,8 @@ from datetime import datetime
 class OwnerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.boottime = datetime.now()
-        self.version = 'v2.1.1'
+        self.boot_time = datetime.now()
+        self.version = 'v2.5.1'
 
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
@@ -50,8 +50,7 @@ class OwnerCog(commands.Cog):
 
     @commands.command(name='echo', hidden=True)
     @commands.is_owner()
-    #add support for server/channel blah blah blah.
-    async def echo(self, ctx, message: str=None):
+    async def echo(self, ctx, message: str = None):
         print(ctx.message.content)
         if message is None:
             await ctx.send('echo echo echo echo...')
@@ -60,33 +59,32 @@ class OwnerCog(commands.Cog):
 
     @commands.command(name='vme', hidden=True)
     @commands.is_owner()
-    async def vme(self, ctx): #need to add a check for dbl/.orga
-        time = datetime.now() - self.boottime
+    async def vme(self, ctx):
+        time = datetime.now() - self.boot_time
         days = time.days
         hours, remainder = divmod(time.seconds, 3600)
         minutes, seconds = divmod(remainder, 60)
-        onlinefor = f'{days}:d {hours}:h {minutes}:m'
+        online_for = f'{days}:d {hours}:h {minutes}:m'
         embed = discord.Embed(colour=discord.Colour(0x50bdfe), description=f'Here is some information about me... \n '
                                                                            f'```'
                                                                            f'Version: {self.version}\n'
                                                                            f'Library: d.py rewrite \n'
-                                                                           f'Uptime: {onlinefor} \n'
+                                                                           f'Uptime: {online_for} \n'
                                                                            f'Server Count: {len(self.bot.guilds)}\n'
-                                                                           f'Member Count: {len(self.bot.users)}'
                                                                            f'```')
         embed.set_footer(text='justin@sobieski.codes')
         await ctx.send(embed=embed)
 
     @commands.command(name='sts', hidden=True)
     @commands.is_owner()
-    async def status(self, ctx, *, status: str=None):
+    async def status(self, ctx, *, status: str = None):
         await self.bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"{status}"))
 
     @commands.command(name='ui', hidden=True)
     @commands.is_owner()
-    async def updateinfo(self, ctx, *, msg: str=None):
+    async def update_info(self, ctx, *, msg: str = None):
         if msg:
-            self.bot.config.data['config']['info'] = msg
+            self.bot.config['info'] = msg
             self.bot.config.save()
             await ctx.send('info has been updated.')
         else:

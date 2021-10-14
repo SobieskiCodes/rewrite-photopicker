@@ -32,7 +32,7 @@ bot = commands.AutoShardedBot(command_prefix=get_prefix, dm_help=False, intents=
 
 @bot.event
 async def on_guild_join(guild):
-    get_guild = await bot.db.execute(f'SELECT ID FROM GuildConfig WHERE ID=?, (guild.id,)')
+    get_guild = await bot.db.execute(f'SELECT ID FROM GuildConfig WHERE ID=?', (guild.id,))
     results = await get_guild.fetchone()
     if not results:
         await bot.db.execute(f"INSERT INTO GuildConfig(ID, Prefix) VALUES (?, ?)", (guild.id, '.'))
@@ -42,7 +42,7 @@ async def on_guild_join(guild):
 @bot.event
 async def on_guild_remove(guild):
     print(f'left server {guild.name}')
-    #remove guild
+
 
 
 @bot.event
@@ -58,7 +58,6 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.BadArgument):
         return
     if isinstance(error, NotAuthorized):
-        #pretty-fi this
         await ctx.send('You are not authorized for this command.')
         pass
     else:

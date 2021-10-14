@@ -109,7 +109,6 @@ venv.bak/
 .idea/rewrite-photopicker.iml
 .idea/vcs.xml
 .idea/workspace.xml
+.idea/
 data.json
-exp.py
 photopicker.db
-data.json
