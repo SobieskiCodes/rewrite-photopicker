@@ -45,7 +45,7 @@ class imgur(commands.Cog):
 
     @is_admin()
     @commands.command(aliases=['delalbum', 'remalbum', 'da', 'ra'])
-    async def deletealbum(self, ctx, *, album_name: str=None):
+    async def deletealbum(self, ctx, *, album_name: str = None):
         """
         deletealbum [album name] - Deletes an album, name.
         ex; .deletealbum a phone
@@ -68,11 +68,11 @@ class imgur(commands.Cog):
 
     @commands.command(aliases=['p1', 'po', 'pick'])
     async def pickone(self, ctx, *, album_name: str = None):
-        '''
+        """
         pickone (Optional album name) - picks a random image from the album.
         ex; .pickone a phone
         If only one album exists you do not provide an album name.
-        '''
+        """
         grab_content_title_config = await self.bot.fetch.one(f"SELECT Content, Title FROM GuildConfig WHERE ID=?",
                                                              (ctx.guild.id,))
         content = grab_content_title_config[0]
@@ -86,7 +86,7 @@ class imgur(commands.Cog):
             fetch_album = await self.bot.fetch.one(f"SELECT * FROM Albums WHERE GuildID=? AND AlbumName=?",
                                                     (ctx.guild.id, album_name,))
             if not fetch_album:
-                return await ctx.send("Coulnt find an album by that name")
+                return await ctx.send("Couldnt find an album by that name")
 
             if len(fetch_album) == 0:
                 return await ctx.send('You should probably add an album first..')
@@ -117,7 +117,7 @@ class imgur(commands.Cog):
             if content in ['description', 'Description']:
                 content = self.imgur_client.get_image(item_id).description
             if (self.imgur_client.get_image(item_id).size * 1e-6) > 8.0:
-                return await ctx.send(f"{self.imgur_client.get_image(item_id).link} was too big to send locally.")
+                return await ctx.send(f"{self.imgur_client.get_image(item_id).link} was too big to send.")
             get_stream_status = await self.bot.fetch.one(f"SELECT Stream FROM GuildConfig WHERE ID=?", (ctx.guild.id,))
             stream = get_stream_status[0]
             async with self.bot.aiohttp.get(item) as resp:
@@ -149,9 +149,9 @@ class imgur(commands.Cog):
             print(f'{e}, tail: {tail if tail else None} link: {imgur_link}, item: {item if item else None}')
             if isinstance(e, ImgurClientError):
                 print(f'{e.error_message}')
-                await ctx.send(f'{e.error_message}')
+                return await ctx.send(f'{e.error_message}')
             elif not isinstance(e, ImgurClientError):
-                await ctx.send(f'There was an issue processing this command.\nDebug: `{e}`')
+                return await ctx.send(f'There was an issue processing this command.\nDebug: `{e}`')
 
     @commands.command(aliases=['al', 'list'])
     async def albumlist(self, ctx):
@@ -168,10 +168,10 @@ class imgur(commands.Cog):
     @is_admin()
     @commands.command(aliases=['adda', 'admin'])
     async def addadmin(self, ctx, member: discord.Member = None):
-        '''addadmin [user name] - Adds an admin
+        """addadmin [user name] - Adds an admin
         ex; .addadmin @ProbsJustin#0001
         You can attempt to use just a string name; eg ProbsJustin but recommend a mention.
-        '''
+        """
         if not member:
             await ctx.send('You should probably include a member.')
             return
@@ -190,10 +190,10 @@ class imgur(commands.Cog):
     @is_admin()
     @commands.command(aliases=['remadmin', 'deladmin', 'deleteadmin'])
     async def removeadmin(self, ctx, member: discord.Member = None):
-        '''removeadmin [user name] - Remove an admin
+        """removeadmin [user name] - Remove an admin
         ex; .removeadmin @ProbsJustin#0001
         You can attempt to use just a string name; eg ProbsJustin but recommend a mention.
-        '''
+        """
         if not member:
             await ctx.send('You should probably include a member.')
             return
@@ -249,7 +249,6 @@ class imgur(commands.Cog):
         await self.bot.db.commit()
         await ctx.send(f"Streaming turned {'on' if not get_stream_status[0] else 'off'}")
         # opposite because we don't re-fetch the current we just assume the database changed.
-
 
 
 def setup(bot):

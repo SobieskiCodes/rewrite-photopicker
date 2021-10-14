@@ -44,7 +44,6 @@ async def on_guild_remove(guild):
     print(f'left server {guild.name}')
 
 
-
 @bot.event
 async def on_ready():
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}')
@@ -64,7 +63,6 @@ async def on_command_error(ctx, error):
         if ctx.guild:
             print(f'Error in {ctx.guild.id} with message {ctx.message.content}')
         raise error
-
 
 
 @bot.check
