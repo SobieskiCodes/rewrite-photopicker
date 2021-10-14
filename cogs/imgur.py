@@ -206,13 +206,14 @@ class imgur(commands.Cog):
             await ctx.send(f"Please provide either {' or '.join(editable_args)}.")
             return
         content_title = content_title.lower()
+        print(content_title)
         if content_title in editable_args:
             if content_title == "title":
                 await self.bot.db.execute(f"UPDATE GuildConfig SET Title=? WHERE ID=?",
-                                          (content_title, ctx.guild.id,))
+                                          (message, ctx.guild.id,))
             if content_title == 'content':
                 await self.bot.db.execute(f"UPDATE GuildConfig SET Content=? WHERE ID=?",
-                                          (content_title, ctx.guild.id,))
+                                          (message, ctx.guild.id,))
 
             await self.bot.db.commit()
             await ctx.send(f'{content_title.lower()} updated.')

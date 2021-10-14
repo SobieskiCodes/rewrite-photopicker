@@ -7,7 +7,7 @@ class OwnerCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.boottime = datetime.now()
-        self.version = 'v2.1.0'
+        self.version = 'v2.1.1'
 
     @commands.command(name='load', hidden=True)
     @commands.is_owner()
