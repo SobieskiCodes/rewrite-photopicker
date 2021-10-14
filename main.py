@@ -105,7 +105,7 @@ async def create_dbconnect():
         await bot.db.execute("""CREATE TABLE "Albums" (
                                 "ID"	INTEGER,
                                 "GuildID"	INTEGER NOT NULL,
-                                "AlbumName"	TEXT NOT NULL UNIQUE,
+                                "AlbumName"	TEXT NOT NULL,
                                 "AlbumLink"	TEXT NOT NULL,
                                 PRIMARY KEY("ID" AUTOINCREMENT)
                             )""")
@@ -114,6 +114,7 @@ async def create_dbconnect():
                                 "Prefix"	TEXT,
                                 "Content"	TEXT,
                                 "Title"	TEXT,
+                                "Stream"	INTEGER DEFAULT 0,
                                 PRIMARY KEY("ID")
                             )""")
         await bot.db.execute("""CREATE TABLE "Permissions" (

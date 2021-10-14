@@ -15,6 +15,7 @@ class imgur(commands.Cog):
         self.secretID = bot.config.get('imgur_client_secret')
         self.imgur_client = ImgurClient(self.clientID, self.secretID)
 
+
     @is_admin()
     @commands.command(aliases=['addalbum', 'aa'])
     async def album(self, ctx, link: str = None, *, album_name: str = None):
@@ -115,26 +116,42 @@ class imgur(commands.Cog):
                 title = self.imgur_client.get_album(tail).title
             if content in ['description', 'Description']:
                 content = self.imgur_client.get_image(item_id).description
-
+            if (self.imgur_client.get_image(item_id).size * 1e-6) > 8.0:
+                return await ctx.send(f"{self.imgur_client.get_image(item_id).link} was too big to send locally.")
+            get_stream_status = await self.bot.fetch.one(f"SELECT Stream FROM GuildConfig WHERE ID=?", (ctx.guild.id,))
+            stream = get_stream_status[0]
             async with self.bot.aiohttp.get(item) as resp:
                 link = await resp.read()
                 if item.endswith('.gif'):
                     f = discord.File(io.BytesIO(link), filename="image.gif")
                     e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
-                    e.set_image(url=f'''attachment://image.gif''')
+                    if stream:
+                        e.set_image(url=f'''attachment://image.gif''')
+                    else:
+                        e.set_image(url=f'{self.imgur_client.get_image(item_id).link}')
                 else:
                     f = discord.File(io.BytesIO(link), filename="image.png")
                     e = discord.Embed(title=title, colour=discord.Colour(0x278d89), )
-                    e.set_image(url=f'''attachment://image.png''')
-                await ctx.send(file=f, embed=e, content=content)
+                    if stream:
+                        e.set_image(url=f'''attachment://image.png''')
+                    else:
+                        e.set_image(url=f'{self.imgur_client.get_image(item_id).link}')
+
+                e.set_footer(text=f'storage is currently: {"link" if not stream else "stream"} \n'
+                                  f'if images aren\'t showing up, try toggling this with .stream')
+                if stream:
+                    await ctx.send(file=f, embed=e, content=content)
+
+                if not stream:
+                    await ctx.send(embed=e, content=content)
 
         except Exception as e:
-            print(f'{e}')
+            print(f'{e}, tail: {tail if tail else None} link: {imgur_link}, item: {item if item else None}')
             if isinstance(e, ImgurClientError):
                 print(f'{e.error_message}')
                 await ctx.send(f'{e.error_message}')
             elif not isinstance(e, ImgurClientError):
-                await ctx.send('There was an issue processing this command.')
+                await ctx.send(f'There was an issue processing this command.\nDebug: `{e}`')
 
     @commands.command(aliases=['al', 'list'])
     async def albumlist(self, ctx):
@@ -206,7 +223,6 @@ class imgur(commands.Cog):
             await ctx.send(f"Please provide either {' or '.join(editable_args)}.")
             return
         content_title = content_title.lower()
-        print(content_title)
         if content_title in editable_args:
             if content_title == "title":
                 await self.bot.db.execute(f"UPDATE GuildConfig SET Title=? WHERE ID=?",
@@ -220,6 +236,20 @@ class imgur(commands.Cog):
 
         else:
             await ctx.send("Invalid parameters.")
+
+    @is_admin()
+    @commands.command()
+    async def stream(self, ctx):
+        """
+        Toggles how the images are sent to discord, if images aren't showing up try toggling this.
+        """
+        get_stream_status = await self.bot.fetch.one(f"SELECT Stream FROM GuildConfig WHERE ID=?", (ctx.guild.id,))
+        update_stream_status = await self.bot.db.execute(f"UPDATE GuildConfig SET Stream=? WHERE ID=?",
+                                                   (not get_stream_status[0], ctx.guild.id))
+        await self.bot.db.commit()
+        await ctx.send(f"Streaming turned {'on' if not get_stream_status[0] else 'off'}")
+        # opposite because we don't re-fetch the current we just assume the database changed.
+
 
 
 def setup(bot):
