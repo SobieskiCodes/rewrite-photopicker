@@ -7,9 +7,10 @@ class info(commands.Cog):
 
     @commands.command()
     async def info(self, ctx):
-        '''info - see current information you might need to know about changes.
-        '''
-        await ctx.send(f"{self.bot.config.data.get('config').get('info')}")
+        """
+        info - see current information you might need to know about changes.
+        """
+        await ctx.send(f"{self.bot.config.get('info')}")
 
 
 def setup(bot):

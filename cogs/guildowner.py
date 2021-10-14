@@ -1,14 +1,6 @@
 from discord.ext import commands
 import discord
-from cogs.util import pyson
-
-
-def is_guild_owner():
-    def predictate(ctx):
-        if ctx.author is ctx.guild.owner:
-            return True
-        return False
-    return commands.check(predictate)
+from cogs.util.checks import is_guild_owner
 
 
 class GuildOwnerCog(commands.Cog):
@@ -18,19 +10,17 @@ class GuildOwnerCog(commands.Cog):
     @commands.command(aliases=['sp'])
     @is_guild_owner()
     async def setprefix(self, ctx, prefix: str=None):
-        ''': Change the prefix of the bot, up to two chars.'''
+        """: Change the prefix of the bot, up to two chars."""
         if not prefix:
-            self.bot.serverconfig = pyson.Pyson(f'data/servers/{str(ctx.guild.id)}/config.json')
-            prefix = self.bot.serverconfig.data.get('config').get('prefix')
-            await ctx.send(f'current prefix is {prefix}')
+            prefix_list = await self.bot.get_prefix(ctx.message)
+            await ctx.send(f'`{"` and `".join(prefix_list[1:])}` are my two current prefixes.')
             return
         else:
             if len(prefix) >= 3:
                 await ctx.send('Prefix length too long.')
                 return
-
-            self.bot.serverconfig.data['config']['prefix'] = prefix
-            self.bot.serverconfig.save()
+            await self.bot.db.execute(f"REPLACE INTO GuildConfig(ID, Prefix) VALUES (?, ?)", (ctx.guild.id, prefix))
+            await self.bot.db.commit()
             await ctx.send(f'Prefix updated to {prefix}')
 
     @commands.command(name='inv', hidden=True)

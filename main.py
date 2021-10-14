@@ -4,26 +4,35 @@ from discord.ext import commands
 from pathlib import Path
 import aiosqlite
 import aiohttp
-from cogs.util.errorhandling import NotAuthorized
+from cogs.util.errors import NotAuthorized
 import jthon
 
 
 async def get_prefix(bot, message):
-    fetch = await bot.db.execute(f'SELECT Prefix FROM GuildConfig WHERE ID={message.guild.id}')
-    result = await fetch.fetchone()
-    if not result:
-        prefix = '.'
-    else:
-        prefix = result[0]
+    prefix = '.'
+    if message.guild:
+        fetch = await bot.db.execute(f'SELECT Prefix FROM GuildConfig WHERE ID={message.guild.id}')
+        result = await fetch.fetchone()
+        if result:
+            prefix = result[0]
+        if not result:
+            await bot.db.execute(f"INSERT INTO GuildConfig(ID, Prefix) VALUES (?, ?)", (message.guild.id, prefix))
+            await bot.db.commit()
     return commands.when_mentioned_or(*prefix)(bot, message)
 
-
-bot = commands.AutoShardedBot(command_prefix=get_prefix)
+# Configure intents
+intents = discord.Intents.none()
+intents.guilds = True
+intents.members = False
+intents.voice_states = False
+intents.messages = True
+intents.reactions = True
+bot = commands.AutoShardedBot(command_prefix=get_prefix, dm_help=False, intents=intents)
 
 
 @bot.event
 async def on_guild_join(guild):
-    get_guild = await bot.db.execute(f'SELECT ID FROM GuildConfig WHERE ID={guild.id}')
+    get_guild = await bot.db.execute(f'SELECT ID FROM GuildConfig WHERE ID=?, (guild.id,)')
     results = await get_guild.fetchone()
     if not results:
         await bot.db.execute(f"INSERT INTO GuildConfig(ID, Prefix) VALUES (?, ?)", (guild.id, '.'))
@@ -39,7 +48,7 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_ready():
     print(f'\n\nLogged in as: {bot.user.name} - {bot.user.id}')
-    await bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"Mention me for prefix"))
+    await bot.change_presence(status=discord.Status.idle, activity=discord.Game(f"Feeding the hamsters"))
 
 
 @bot.event
@@ -53,8 +62,10 @@ async def on_command_error(ctx, error):
         await ctx.send('You are not authorized for this command.')
         pass
     else:
-        print(f'Error in {ctx.guild.id} with message {ctx.message.content}')
+        if ctx.guild:
+            print(f'Error in {ctx.guild.id} with message {ctx.message.content}')
         raise error
+
 
 
 @bot.check
@@ -88,12 +99,53 @@ async def create_aiohttp():
 
 
 async def create_dbconnect():
-    bot.db = await aiosqlite.connect("photopicker.db")
+    if not os.path.exists("./photopicker.db"):
+        with open('photopicker.db', 'a') as fp:
+            pass
+        bot.db = await aiosqlite.connect("photopicker.db")
+        await bot.db.execute("""CREATE TABLE "Albums" (
+                                "ID"	INTEGER,
+                                "GuildID"	INTEGER NOT NULL,
+                                "AlbumName"	TEXT NOT NULL UNIQUE,
+                                "AlbumLink"	TEXT NOT NULL,
+                                PRIMARY KEY("ID" AUTOINCREMENT)
+                            )""")
+        await bot.db.execute("""CREATE TABLE "GuildConfig" (
+                                "ID"	INTEGER,
+                                "Prefix"	TEXT,
+                                "Content"	TEXT,
+                                "Title"	TEXT,
+                                PRIMARY KEY("ID")
+                            )""")
+        await bot.db.execute("""CREATE TABLE "Permissions" (
+                                "ID"	INTEGER,
+                                "MemberID"	INTEGER NOT NULL,
+                                "GuildID"	INTEGER NOT NULL,
+                                PRIMARY KEY("ID" AUTOINCREMENT)
+                            )""")
+        await bot.db.commit()
+    else:
+        bot.db = await aiosqlite.connect("photopicker.db")
 
 
-bot.loop.create_task(create_aiohttp())
+class Fetch:
+    def __init__(self, bot):
+        self.bot = bot
+
+    async def all(self, *arg):
+        get = await self.bot.db.execute(*arg)
+        results = await get.fetchall()
+        return results
+
+    async def one(self, *arg):
+        get = await self.bot.db.execute(*arg)
+        results = await get.fetchone()
+        return results
+
+
+bot.config = jthon.load('data')['config']
+bot.fetch = Fetch(bot)
 bot.loop.create_task(create_dbconnect())
-bot.config = jthon.load('data')
-token = bot.config.get('config').get('token').data
+bot.loop.create_task(create_aiohttp())
 load_extensions()
-bot.run(token)
+bot.run(bot.config.get('token'))
